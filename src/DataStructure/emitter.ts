@@ -5,33 +5,33 @@ type EmiterType = {
 }
 
 
-const Emiter: EmiterType = {
+const Emitter: EmiterType = {
   eventList: {},
   subscribe: (eventType: string, eventFunc: Function) => {
     function unSubscribe(eventType: string, eventFunc: Function) {
-      const filter = Emiter.eventList[eventType]?.filter((eventArr) => eventArr.key !== eventFunc);
-      Emiter.eventList[eventType] = filter
-      if (!Emiter.eventList[eventType]) {
-        Emiter.eventList[eventType] = undefined;
+      const filter = Emitter.eventList[eventType]?.filter((eventArr) => eventArr.key !== eventFunc);
+      Emitter.eventList[eventType] = filter
+      if (!Emitter.eventList[eventType]) {
+        Emitter.eventList[eventType] = undefined;
       }
     }
 
     function checkIfEventSubscribed(eventType: string, eventFunc: Function): boolean {
-      const fillterdFunc: { key: Function } | undefined = Emiter.eventList[eventType]?.filter((event: { key: Function }) => event.key === eventFunc)[0];
+      const fillterdFunc: { key: Function } | undefined = Emitter.eventList[eventType]?.filter((event: { key: Function }) => event.key === eventFunc)[0];
 
       return fillterdFunc !== undefined ? true : false;
     }
 
     return () => {
-      if (!Emiter.eventList[eventType]) {
-        Emiter.eventList[eventType] = [{ key: eventFunc }];
+      if (!Emitter.eventList[eventType]) {
+        Emitter.eventList[eventType] = [{ key: eventFunc }];
         return {
           unSubscribe: () => unSubscribe(eventType, eventFunc),
         }
       }
 
       if (!checkIfEventSubscribed(eventType, eventFunc)) {
-        Emiter.eventList[eventType]?.push({ key: eventFunc });
+        Emitter.eventList[eventType]?.push({ key: eventFunc });
         return { unSubscribe: () => unSubscribe(eventType, eventFunc), }
       }
 
@@ -41,7 +41,7 @@ const Emiter: EmiterType = {
     }
   },
   emit: (eventType: string, eventProps: {}) => {
-    Emiter.eventList[eventType]?.forEach((event: { key: Function }) => {
+    Emitter.eventList[eventType]?.forEach((event: { key: Function }) => {
       return event.key(eventProps);
     });
   }
@@ -114,4 +114,7 @@ eventEmitter.emit('keydown', { key: 'Enter' });
 const keydownSubscription3 = eventEmitter.subscribe('keydown', logFunc1);
 const keydownSubscription4 = eventEmitter.subscribe('keydown', logFunc1);
 eventEmitter.emit('keydown', { key: 'Enter' });
+
+
+
 
