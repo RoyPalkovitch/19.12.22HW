@@ -32,14 +32,14 @@ const Emitter: EmiterType = {
       unSubscribe: () => { }
     }
   },
-  unSubscribe: (eventType: string, eventFunc: Function) => {
+  unSubscribe: (eventType: string, eventFunc: Function): void => {
     const filter = Emitter.eventList[eventType]?.filter((eventArr) => eventArr.key !== eventFunc);
     Emitter.eventList[eventType] = filter
     if (!Emitter.eventList[eventType]) {
       Emitter.eventList[eventType] = undefined;
     }
   },
-  emit: (eventType: string, eventProps: {}) => {
+  emit: (eventType: string, eventProps: {}): Function | void => {
     Emitter.eventList[eventType]?.forEach((event: { key: Function }) => {
       return event.key(eventProps);
     });

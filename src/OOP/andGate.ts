@@ -1,4 +1,5 @@
-class AndGate extends BinaryGate {
+import { BinaryGate } from "./binaryGate";
+export class AndGate extends BinaryGate {
 
   constructor(inputA: boolean, inputB: boolean) {
     super(inputA, inputB);

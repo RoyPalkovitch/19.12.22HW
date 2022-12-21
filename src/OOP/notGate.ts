@@ -1,5 +1,6 @@
+import { UnaryGate } from "./unaryGate";
 
-class NotGate extends UnaryGate {
+export class NotGate extends UnaryGate {
 
   constructor(inputA: boolean) {
     super(inputA);

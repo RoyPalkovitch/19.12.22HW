@@ -1,3 +1,4 @@
+"use strict";
 const Emitter = {
     eventList: {},
     subscribe: (eventType, eventFunc) => {
@@ -79,16 +80,17 @@ const logFunc1 = (props) => {
 const logFunc2 = (props) => {
     console.log('2' + props.key);
 };
+console.log('----------Event Emitter as Class----------');
 const eventEmitter = new EventEmitter();
 const keydownSubscription1 = eventEmitter.subscribe('keydown', logFunc1);
 const keydownSubscription2 = eventEmitter.subscribe('keydown', logFunc2);
 eventEmitter.emit('keydown', { key: 'Enter' });
-keydownSubscription1.unSubscribe();
+keydownSubscription1 === null || keydownSubscription1 === void 0 ? void 0 : keydownSubscription1.unSubscribe();
 eventEmitter.emit('keydown', { key: 'Enter' });
 const keydownSubscription3 = eventEmitter.subscribe('keydown', logFunc1);
 const keydownSubscription4 = eventEmitter.subscribe('keydown', logFunc1);
 eventEmitter.emit('keydown', { key: 'Enter' });
-console.log('--------------------');
+console.log('----------Event Emitter as Object----------');
 const eventEmitter2 = Emitter.subscribe('keydown', logFunc1);
 const eventEmitter3 = Emitter.subscribe('keydown', logFunc2);
 Emitter.emit('keydown', { key: 'Enter' });

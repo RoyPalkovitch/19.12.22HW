@@ -1,4 +1,6 @@
-class OrGate extends BinaryGate {
+import { BinaryGate } from "./binaryGate";
+
+export class OrGate extends BinaryGate {
 
   constructor(inputA: boolean, inputB: boolean) {
     super(inputA, inputB);
