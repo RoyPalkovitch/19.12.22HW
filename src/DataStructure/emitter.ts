@@ -109,7 +109,7 @@ const keydownSubscription1 = eventEmitter.subscribe('keydown', logFunc1);
 const keydownSubscription2 = eventEmitter.subscribe('keydown', logFunc2);
 
 eventEmitter.emit('keydown', { key: 'Enter' });
-keydownSubscription1.unSubscribe();
+keydownSubscription1?.unSubscribe();
 eventEmitter.emit('keydown', { key: 'Enter' });
 const keydownSubscription3 = eventEmitter.subscribe('keydown', logFunc1);
 const keydownSubscription4 = eventEmitter.subscribe('keydown', logFunc1);
