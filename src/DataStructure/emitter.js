@@ -1,29 +1,29 @@
-const Emiter = {
+const Emitter = {
     eventList: {},
     subscribe: (eventType, eventFunc) => {
         function unSubscribe(eventType, eventFunc) {
             var _a;
-            const filter = (_a = Emiter.eventList[eventType]) === null || _a === void 0 ? void 0 : _a.filter((eventArr) => eventArr.key !== eventFunc);
-            Emiter.eventList[eventType] = filter;
-            if (!Emiter.eventList[eventType]) {
-                Emiter.eventList[eventType] = undefined;
+            const filter = (_a = Emitter.eventList[eventType]) === null || _a === void 0 ? void 0 : _a.filter((eventArr) => eventArr.key !== eventFunc);
+            Emitter.eventList[eventType] = filter;
+            if (!Emitter.eventList[eventType]) {
+                Emitter.eventList[eventType] = undefined;
             }
         }
         function checkIfEventSubscribed(eventType, eventFunc) {
             var _a;
-            const funcToEmmit = ((_a = Emiter.eventList[eventType]) === null || _a === void 0 ? void 0 : _a.filter((event) => event.key === eventFunc)) ? true : false;
-            return funcToEmmit;
+            const fillterdFunc = (_a = Emitter.eventList[eventType]) === null || _a === void 0 ? void 0 : _a.filter((event) => event.key === eventFunc)[0];
+            return fillterdFunc !== undefined ? true : false;
         }
         return () => {
             var _a;
-            if (!Emiter.eventList[eventType]) {
-                Emiter.eventList[eventType] = [{ key: eventFunc }];
+            if (!Emitter.eventList[eventType]) {
+                Emitter.eventList[eventType] = [{ key: eventFunc }];
                 return {
                     unSubscribe: () => unSubscribe(eventType, eventFunc),
                 };
             }
             if (!checkIfEventSubscribed(eventType, eventFunc)) {
-                (_a = Emiter.eventList[eventType]) === null || _a === void 0 ? void 0 : _a.push({ key: eventFunc });
+                (_a = Emitter.eventList[eventType]) === null || _a === void 0 ? void 0 : _a.push({ key: eventFunc });
                 return { unSubscribe: () => unSubscribe(eventType, eventFunc), };
             }
             return {
@@ -33,7 +33,7 @@ const Emiter = {
     },
     emit: (eventType, eventProps) => {
         var _a;
-        (_a = Emiter.eventList[eventType]) === null || _a === void 0 ? void 0 : _a.forEach((event) => {
+        (_a = Emitter.eventList[eventType]) === null || _a === void 0 ? void 0 : _a.forEach((event) => {
             return event.key(eventProps);
         });
     }
