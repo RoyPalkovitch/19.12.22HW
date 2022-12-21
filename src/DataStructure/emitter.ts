@@ -1,20 +1,14 @@
 type EmiterType = {
   eventList: { [eventType: string]: { key: Function }[] | undefined },
   subscribe: Function,
-  emit: Function
+  emit: Function,
+  unSubscribe: Function
 }
 
 
 const Emitter: EmiterType = {
   eventList: {},
-  subscribe: (eventType: string, eventFunc: Function) => {
-    function unSubscribe(eventType: string, eventFunc: Function) {
-      const filter = Emitter.eventList[eventType]?.filter((eventArr) => eventArr.key !== eventFunc);
-      Emitter.eventList[eventType] = filter
-      if (!Emitter.eventList[eventType]) {
-        Emitter.eventList[eventType] = undefined;
-      }
-    }
+  subscribe: (eventType: string, eventFunc: Function): { unSubscribe: Function } | undefined => {
 
     function checkIfEventSubscribed(eventType: string, eventFunc: Function): boolean {
       const fillterdFunc: { key: Function } | undefined = Emitter.eventList[eventType]?.filter((event: { key: Function }) => event.key === eventFunc)[0];
@@ -22,22 +16,27 @@ const Emitter: EmiterType = {
       return fillterdFunc !== undefined ? true : false;
     }
 
-    return () => {
-      if (!Emitter.eventList[eventType]) {
-        Emitter.eventList[eventType] = [{ key: eventFunc }];
-        return {
-          unSubscribe: () => unSubscribe(eventType, eventFunc),
-        }
-      }
-
-      if (!checkIfEventSubscribed(eventType, eventFunc)) {
-        Emitter.eventList[eventType]?.push({ key: eventFunc });
-        return { unSubscribe: () => unSubscribe(eventType, eventFunc), }
-      }
-
+    if (!Emitter.eventList[eventType]) {
+      Emitter.eventList[eventType] = [{ key: eventFunc }];
       return {
-        unSubscribe: () => { }
+        unSubscribe: () => Emitter.unSubscribe(eventType, eventFunc),
       }
+    }
+
+    if (!checkIfEventSubscribed(eventType, eventFunc)) {
+      Emitter.eventList[eventType]?.push({ key: eventFunc });
+      return { unSubscribe: () => Emitter.unSubscribe(eventType, eventFunc) }
+    }
+
+    return {
+      unSubscribe: () => { }
+    }
+  },
+  unSubscribe: (eventType: string, eventFunc: Function) => {
+    const filter = Emitter.eventList[eventType]?.filter((eventArr) => eventArr.key !== eventFunc);
+    Emitter.eventList[eventType] = filter
+    if (!Emitter.eventList[eventType]) {
+      Emitter.eventList[eventType] = undefined;
     }
   },
   emit: (eventType: string, eventProps: {}) => {
@@ -102,6 +101,7 @@ const logFunc1 = (props: { key: string; }): void => {
 const logFunc2 = (props: { key: string; }): void => {
   console.log('2' + props.key);
 }
+console.log('----------Event Emitter as Class----------');
 
 const eventEmitter: EventEmitter = new EventEmitter();
 
@@ -116,5 +116,14 @@ const keydownSubscription4 = eventEmitter.subscribe('keydown', logFunc1);
 eventEmitter.emit('keydown', { key: 'Enter' });
 
 
+console.log('----------Event Emitter as Object----------');
+const eventEmitter2 = Emitter.subscribe('keydown', logFunc1);
+const eventEmitter3 = Emitter.subscribe('keydown', logFunc2);
 
 
+Emitter.emit('keydown', { key: 'Enter' });
+eventEmitter2.unSubscribe();
+Emitter.emit('keydown', { key: 'Enter' });
+const eventEmitter4 = Emitter.subscribe('keydown', logFunc1);
+const eventEmitter5 = Emitter.subscribe('keydown', logFunc1);
+Emitter.emit('keydown', { key: 'Enter' });

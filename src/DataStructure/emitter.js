@@ -1,35 +1,33 @@
 const Emitter = {
     eventList: {},
     subscribe: (eventType, eventFunc) => {
-        function unSubscribe(eventType, eventFunc) {
-            var _a;
-            const filter = (_a = Emitter.eventList[eventType]) === null || _a === void 0 ? void 0 : _a.filter((eventArr) => eventArr.key !== eventFunc);
-            Emitter.eventList[eventType] = filter;
-            if (!Emitter.eventList[eventType]) {
-                Emitter.eventList[eventType] = undefined;
-            }
-        }
+        var _a;
         function checkIfEventSubscribed(eventType, eventFunc) {
             var _a;
             const fillterdFunc = (_a = Emitter.eventList[eventType]) === null || _a === void 0 ? void 0 : _a.filter((event) => event.key === eventFunc)[0];
             return fillterdFunc !== undefined ? true : false;
         }
-        return () => {
-            var _a;
-            if (!Emitter.eventList[eventType]) {
-                Emitter.eventList[eventType] = [{ key: eventFunc }];
-                return {
-                    unSubscribe: () => unSubscribe(eventType, eventFunc),
-                };
-            }
-            if (!checkIfEventSubscribed(eventType, eventFunc)) {
-                (_a = Emitter.eventList[eventType]) === null || _a === void 0 ? void 0 : _a.push({ key: eventFunc });
-                return { unSubscribe: () => unSubscribe(eventType, eventFunc), };
-            }
+        if (!Emitter.eventList[eventType]) {
+            Emitter.eventList[eventType] = [{ key: eventFunc }];
             return {
-                unSubscribe: () => { }
+                unSubscribe: () => Emitter.unSubscribe(eventType, eventFunc),
             };
+        }
+        if (!checkIfEventSubscribed(eventType, eventFunc)) {
+            (_a = Emitter.eventList[eventType]) === null || _a === void 0 ? void 0 : _a.push({ key: eventFunc });
+            return { unSubscribe: () => Emitter.unSubscribe(eventType, eventFunc) };
+        }
+        return {
+            unSubscribe: () => { }
         };
+    },
+    unSubscribe: (eventType, eventFunc) => {
+        var _a;
+        const filter = (_a = Emitter.eventList[eventType]) === null || _a === void 0 ? void 0 : _a.filter((eventArr) => eventArr.key !== eventFunc);
+        Emitter.eventList[eventType] = filter;
+        if (!Emitter.eventList[eventType]) {
+            Emitter.eventList[eventType] = undefined;
+        }
     },
     emit: (eventType, eventProps) => {
         var _a;
@@ -90,3 +88,12 @@ eventEmitter.emit('keydown', { key: 'Enter' });
 const keydownSubscription3 = eventEmitter.subscribe('keydown', logFunc1);
 const keydownSubscription4 = eventEmitter.subscribe('keydown', logFunc1);
 eventEmitter.emit('keydown', { key: 'Enter' });
+console.log('--------------------');
+const eventEmitter2 = Emitter.subscribe('keydown', logFunc1);
+const eventEmitter3 = Emitter.subscribe('keydown', logFunc2);
+Emitter.emit('keydown', { key: 'Enter' });
+eventEmitter2.unSubscribe();
+Emitter.emit('keydown', { key: 'Enter' });
+const eventEmitter4 = Emitter.subscribe('keydown', logFunc1);
+const eventEmitter5 = Emitter.subscribe('keydown', logFunc1);
+Emitter.emit('keydown', { key: 'Enter' });
